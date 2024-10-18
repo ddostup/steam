@@ -485,13 +485,13 @@ class CMServerList(object):
 
         from steam import webapi
         try:
-            resp = webapi.get('ISteamDirectory', 'GetCMList', 1, params={'cellid': cell_id,
+            resp = webapi.get('ISteamDirectory', 'GetCMListForConnect', 1, params={'cmtype': 'netfilter',
                                                                          'http_timeout': 3})
         except Exception as exp:
             self._LOG.error("WebAPI boostrap failed: %s" % str(exp))
             return False
 
-        result = EResult(resp['response']['result'])
+        result = EResult(resp['response']['success'])
 
         if result != EResult.OK:
             self._LOG.error("GetCMList failed with %s" % repr(result))
@@ -501,7 +501,7 @@ class CMServerList(object):
         self._LOG.debug("Received %d servers from WebAPI" % len(serverlist))
 
         def str_to_tuple(serveraddr):
-            ip, port = serveraddr.split(':')
+            ip, port = serveraddr['endpoint'].split(':')
             return str(ip), int(port)
 
         self.clear()
